@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.Mapper.StudentMapper">
+    <resultMap id="BaseResultMap" type="com.example.Bean.Student">
+        <result column="s_name" property="name"></result>
+        <result column="s_id" property="id"></result>
+        <result column="s_birth" property="birth"></result>
+        <result column="s_sex" property="sex"></result>
+    </resultMap>
+    <!--SELECT s1.s_name,s1.s_birth,s1.s_sex,s2.s_score,c.c_name FROM score s2 INNER JOIN student s1 on s2.s_id=s1.s_id INNER JOIN course c on s2.c_id=c.c_id-->
+    <resultMap id="StuInfo" type="com.example.Bean.Student">
+        <result column="s_name" property="name"></result>
+        <result column="s_id" property="id"></result>
+        <result column="s_birth" property="birth"></result>
+        <result column="s_sex" property="sex"></result>
+        <collection property="score" ofType="com.example.Bean.Score">
+            <result column="s_id" property="sid"></result>
+            <result column="c_id" property="cid"></result>
+            <result column="s_score" property="score"></result>
+        <association property="course" javaType="com.example.Bean.Course">
+            <result column="c_id" property="cid"></result>
+            <result column="c_name" property="cname"></result>
+            <result column="t_id" property="tid"></result>
+        </association>
+        </collection>
+    </resultMap>
+    <select id="findStuInfo" parameterType="String" resultMap="StuInfo">
+select s1.s_name,s1.s_birth,s1.s_sex,s2.s_score,c.c_name FROM score s2 INNER JOIN student s1 on s2.s_id=s1.s_id INNER JOIN course c on s2.c_id=c.c_id
+    </select>
+    <sql id="Base_Column_List">
+        s_id,s_name,s_birth,s_sex
+            </sql>
+    <select id="findAll" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"></include>
+        from student;
+    </select>
+    <select id="getById" parameterType="String" resultMap="BaseResultMap">
+        select
+        s_name,s_birth,s_sex
+        from student
+        <where>
+            <if test="s_id!=null and s_id !=''">
+                s_id=#{s_id}
+            </if>
+        </where>
+    </select>
+    <update id="updateStudent" parameterType="com.example.Bean.Student">
+        update student
+        <set>
+            <if test="s_name!=null and s_name!=''">
+                s_name=#{s_name}
+            </if>
+            <if test="s_birth!=null and s_birth!=''">
+                s_birth=#{s_birth}
+            </if>
+            <if test="s_sex!=null and s_sex!=''">
+                s_sex=#{s_sex}
+            </if>
+        </set>
+        <where>
+            s_id=#{s_id}
+        </where>
+    </update>
+    <delete id="deleteStudent" parameterType="String">
+        delete from student
+        <where>
+            <if test="s_id!=null and s_id!=''">
+                s_id=#{s_id}
+            </if>
+        </where>
+    </delete>
+</mapper>
